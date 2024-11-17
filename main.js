@@ -1,29 +1,20 @@
-const fs = require('fs');
+const fs = require('fs')
 
-const jsonFilePath = process.argv[2];
+const jsonContent = fs.readFileSync('users.json', 'utf8')
+const users = JSON.parse(jsonContent)
 
-fs.readFile(jsonFilePath, 'utf8', (err, data) => {
-  if (err) {
-    console.error(`Error reading file: ${err}`);
-    return;
+const totalUsers = users.length
+console.log(`Total number of users: ${totalUsers}`)
+
+let maxScoreUser = users[0]
+users.forEach((user) => {
+  if (user.score > maxScoreUser.score) {
+    maxScoreUser = user
   }
+})
+console.log(`User with highest score: ${JSON.stringify(maxScoreUser)}`)
 
-  const users = JSON.parse(data);
+users.sort((a, b) => b.score - a.score)
 
-  // TODO: Perform the required operations on the users data
-
-  console.log(`Total number of users: ${users.length}`);
-
-  const highestScoreUser = users.reduce((prev, current) => (prev.score > current.score ? prev : current));
-  console.log('User with the highest score:', highestScoreUser);
-
-  users.sort((a, b) => b.score - a.score);
-
-  fs.writeFile(jsonFilePath, JSON.stringify(users, null, 2), (err) => {
-    if (err) {
-      console.error(`Error writing file: ${err}`);
-      return;
-    }
-    console.log('Data sorted and written back to the JSON file.');
-  });
-});
+const sortedData = JSON.stringify(users, null, 2)
+fs.writeFileSync('users.json', sortedData)
